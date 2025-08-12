@@ -1,0 +1,9 @@
+/* PublicRoute specific styles */
+.public-route-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.public-route-content {
+  @apply flex items-center justify-center min-h-screen p-4;
+}

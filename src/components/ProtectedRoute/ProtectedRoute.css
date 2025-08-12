@@ -1,0 +1,19 @@
+/* ProtectedRoute specific styles */
+.protected-route-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.access-denied {
+  @apply text-center p-8;
+}
+
+.access-denied h2 {
+  @apply text-2xl font-bold text-red-600 mb-4;
+}
+
+.access-denied p {
+  @apply text-gray-600 mb-6;
+}
