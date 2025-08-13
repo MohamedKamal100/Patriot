@@ -15,7 +15,8 @@
   left: 5%;
   width: 250px;
   height: 250px;
-  background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(59, 130, 246, 0.2));
+  /* Updated background colors to purple/pink theme */
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.2), rgba(236, 72, 153, 0.2));
   border-radius: 50%;
   animation: float 7s ease-in-out infinite;
 }
@@ -27,7 +28,39 @@
   right: 5%;
   width: 300px;
   height: 300px;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(147, 51, 234, 0.2));
+  /* Updated background colors to purple/pink theme */
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(147, 51, 234, 0.2));
   border-radius: 50%;
   animation: float 9s ease-in-out infinite reverse;
+}
+
+/* Added new styles for category cards and hover effects */
+.category-card {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.category-card:hover {
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+/* Added line clamp utility for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

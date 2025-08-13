@@ -1,4 +1,4 @@
-.products-background {
+.materials-background {
   position: fixed;
   top: 0;
   left: 0;
@@ -8,28 +8,28 @@
   overflow: hidden;
 }
 
-.products-background::before {
+.materials-background::before {
   content: "";
   position: absolute;
-  top: 15%;
-  left: 15%;
-  width: 300px;
-  height: 300px;
-  background: linear-gradient(135deg, rgba(244, 63, 94, 0.3), rgba(251, 146, 60, 0.3));
+  top: 20%;
+  left: 10%;
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(20, 184, 166, 0.3));
   border-radius: 50%;
-  animation: float 8s ease-in-out infinite;
+  animation: float 10s ease-in-out infinite;
 }
 
-.products-background::after {
+.materials-background::after {
   content: "";
   position: absolute;
-  bottom: 15%;
-  right: 15%;
-  width: 250px;
-  height: 250px;
-  background: linear-gradient(135deg, rgba(251, 146, 60, 0.3), rgba(245, 158, 11, 0.3));
+  bottom: 20%;
+  right: 10%;
+  width: 320px;
+  height: 320px;
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.3), rgba(6, 182, 212, 0.3));
   border-radius: 50%;
-  animation: float 6s ease-in-out infinite reverse;
+  animation: float 8s ease-in-out infinite reverse;
 }
 
 @keyframes float {
@@ -38,7 +38,7 @@
     transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-20px) rotate(180deg);
+    transform: translateY(-25px) rotate(180deg);
   }
 }
 

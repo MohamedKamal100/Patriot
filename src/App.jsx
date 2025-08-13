@@ -4,12 +4,15 @@ import Register from "./pages/Register/Register"
 import Home from "./pages/Home/Home"
 import Profile from "./pages/Profile/Profile"
 import Categories from "./pages/Categories/Categories"
+import CategoryDetails from "./pages/CategoryDetails/CategoryDetails" // Added CategoryDetails import
 import Products from "./pages/Products/Products"
+import Materials from "./pages/Materials/Materials" // Added Materials import
 import Orders from "./pages/Orders/Orders"
 import Dashboard from "./pages/Dashboard/Dashboard"
 import ManageUsers from "./pages/ManageUsers/ManageUsers"
 import ManageProducts from "./pages/ManageProducts/ManageProducts"
 import Reports from "./pages/Reports/Reports"
+import ProductDetails from "./pages/ProductDetails/ProductDetails" // Added ProductDetails import
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute"
 import PublicRoute from "./components/PublicRoute/PublicRoute"
 import Navbar from "./components/Navbar/Navbar"
@@ -67,10 +70,34 @@ function App() {
               }
             />
             <Route
+              path="/categories/:id"
+              element={
+                <ProtectedRoute>
+                  <CategoryDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/products"
               element={
                 <ProtectedRoute>
                   <Products />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/products/:id"
+              element={
+                <ProtectedRoute>
+                  <ProductDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/materials"
+              element={
+                <ProtectedRoute>
+                  <Materials />
                 </ProtectedRoute>
               }
             />
