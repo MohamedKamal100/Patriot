@@ -1,67 +1,17 @@
-"use client"
 
-import { useState, useEffect } from "react"
-import { ClipLoader } from "react-spinners"
-import axios from "axios"
-import Swal from "sweetalert2"
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
-import "./Products.css"
+import { useProducts } from "../../contexts/ProductContext"
 
 const Products = () => {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const navigate = useNavigate()
+  const { products, loading, error, fetchProducts, getAverageRating, getProductReviews } = useProducts()
+
   const [searchTerm, setSearchTerm] = useState("")
   const [sortBy, setSortBy] = useState("name")
   const [filterCategory, setFilterCategory] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const [productsPerPage] = useState(12)
-  const navigate = useNavigate()
-
-  const API_BASE_URL = "https://patriot-backend-api-e8be76603d85.herokuapp.com/v1"
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      console.log("🔄 Fetching products from API...")
-
-      const response = await axios.get(`${API_BASE_URL}/products`)
-      console.log("✅ Products API Response:", response.data)
-      console.log("📊 Total products:", response.data.total)
-      console.log("📦 Products array:", response.data.results)
-
-      if (response.data && response.data.results && Array.isArray(response.data.results)) {
-        setProducts(response.data.results)
-        console.log("🎯 Products loaded:", response.data.results.length)
-        console.log("📋 First product structure:", response.data.results[0])
-      } else {
-        throw new Error("Invalid products data format - results array not found")
-      }
-    } catch (error) {
-      console.error("❌ Error fetching products:", error)
-      setError(error.message)
-
-      setProducts([])
-      console.log("🚫 No fallback data - showing empty state")
-
-      Swal.fire({
-        icon: "error",
-        title: "Failed to Load Products",
-        text: "Could not fetch products from server. Please try again.",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 4000,
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchProducts()
-  }, [])
 
   // Filter and sort products
   const filteredProducts = products.filter((product) => {
@@ -78,10 +28,10 @@ const Products = () => {
     switch (sortBy) {
       case "name":
         return (a.name?.en || a.name || "").localeCompare(b.name?.en || b.name || "")
-      case "price":
-        return (a.price || 0) - (b.price || 0)
-      case "category":
-        return (a.category || "").localeCompare(b.category || "")
+      case "rating":
+        return Number.parseFloat(getAverageRating(b.id)) - Number.parseFloat(getAverageRating(a.id))
+      case "reviews":
+        return getProductReviews(b.id).length - getProductReviews(a.id).length
       default:
         return 0
     }
@@ -99,9 +49,45 @@ const Products = () => {
     navigate(`/products/${productId}`)
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-purple-900/20 flex items-center justify-center">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-3xl p-12 text-center shadow-2xl">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent mx-auto mb-6"></div>
+          <p className="text-slate-600 dark:text-slate-300 text-xl font-medium">Loading products...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error && products.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-purple-900/20 flex items-center justify-center">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-3xl p-12 text-center shadow-2xl max-w-md">
+          <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-rose-500 rounded-full mx-auto mb-6 flex items-center justify-center">
+            <span className="text-4xl text-white">❌</span>
+          </div>
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Error Loading Products</h3>
+          <p className="text-slate-600 dark:text-slate-300 mb-6">{error}</p>
+          <button
+            onClick={fetchProducts}
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-purple-900/20 py-8">
-      <div className="products-background"></div>
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-400/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-400/20 dark:bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-indigo-400/20 dark:bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
@@ -115,7 +101,7 @@ const Products = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="glass-card p-6 mb-8 rounded-2xl">
+        <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl p-6 mb-8 shadow-xl">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="md:col-span-2">
               <input
@@ -123,14 +109,14 @@ const Products = () => {
                 placeholder="Search products..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-4 bg-white/70 dark:bg-slate-800/70 border border-blue-200 dark:border-blue-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"
+                className="w-full p-4 bg-white/70 dark:bg-slate-700/70 border border-blue-200 dark:border-blue-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400"
               />
             </div>
             <div>
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
-                className="w-full p-4 bg-white/70 dark:bg-slate-800/70 border border-indigo-200 dark:border-indigo-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300"
+                className="w-full p-4 bg-white/70 dark:bg-slate-700/70 border border-indigo-200 dark:border-indigo-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-300 text-slate-900 dark:text-white"
               >
                 <option value="all">All Categories</option>
                 {categories.map((category) => (
@@ -144,48 +130,27 @@ const Products = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full p-4 bg-white/70 dark:bg-slate-800/70 border border-purple-200 dark:border-purple-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                className="w-full p-4 bg-white/70 dark:bg-slate-700/70 border border-purple-200 dark:border-purple-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-slate-900 dark:text-white"
               >
                 <option value="name">Sort by Name</option>
-                <option value="price">Sort by Price</option>
-                <option value="category">Sort by Category</option>
+                <option value="rating">Sort by Rating</option>
+                <option value="reviews">Sort by Reviews</option>
               </select>
             </div>
           </div>
         </div>
 
         {/* Products Grid */}
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="glass-card p-8 text-center rounded-2xl">
-              <ClipLoader color="#3B82F6" size={50} />
-              <p className="text-slate-600 dark:text-slate-300 mt-4 text-lg">Loading products...</p>
-            </div>
-          </div>
-        ) : error && products.length === 0 ? (
-          <div className="glass-card p-8 text-center rounded-2xl">
-            <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-rose-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-              <span className="text-4xl text-white">❌</span>
-            </div>
-            <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Error Loading Products</h3>
-            <p className="text-slate-600 dark:text-slate-300 mb-6">{error}</p>
-            <button
-              onClick={fetchProducts}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg font-semibold transform hover:scale-105 transition-all duration-300"
-            >
-              Retry
-            </button>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="glass-card p-8 text-center rounded-2xl">
+        {products.length === 0 ? (
+          <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl p-12 text-center shadow-xl">
             <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mx-auto mb-6 flex items-center justify-center">
               <span className="text-4xl text-white">📦</span>
             </div>
-            <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">No Products Found</h3>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">No Products Found</h3>
             <p className="text-slate-600 dark:text-slate-300 mb-6">No products available at the moment.</p>
             <button
               onClick={fetchProducts}
-              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg font-semibold transform hover:scale-105 transition-all duration-300"
+              className="px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-xl font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg"
             >
               Refresh
             </button>
@@ -194,13 +159,8 @@ const Products = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {currentProducts.map((product) => {
-                console.log("🔍 Product debug:", {
-                  id: product.id,
-                  name: product.name,
-                  nameEn: product.name?.en,
-                  nameAr: product.name?.ar,
-                  fullProduct: product,
-                })
+                const avgRating = getAverageRating(product.id)
+                const reviewCount = getProductReviews(product.id).length
 
                 return (
                   <div
@@ -211,13 +171,12 @@ const Products = () => {
                       <img
                         src={
                           product.imageUrl ||
-                          `/glass-product.png?key=e3sty&height=300&width=300&query=product+${encodeURIComponent(product.name?.en || product.name?.ar || "product")}`
+                          `/placeholder.svg?height=300&width=300&query=product+${encodeURIComponent(product.name?.en || product.name?.ar || "product")}`
                         }
                         alt={product.name?.en || product.name?.ar || "Product"}
                         className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {
-                          console.log("🖼️ Image failed to load, using fallback")
-                          e.target.src = "/elegant-glassware.png"
+                          e.target.src = "/elegant-product.png"
                         }}
                       />
 
@@ -227,12 +186,12 @@ const Products = () => {
                         </div>
                       </div>
 
-                      {product.ratingsQuantity > 0 && (
+                      {avgRating > 0 && (
                         <div className="absolute top-3 right-3">
                           <div className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
                             <span>⭐</span>
-                            <span>{product.ratingsAverage.toFixed(1)}</span>
-                            <span className="text-xs opacity-80">({product.ratingsQuantity})</span>
+                            <span>{avgRating}</span>
+                            <span className="text-xs opacity-80">({reviewCount})</span>
                           </div>
                         </div>
                       )}
@@ -243,11 +202,7 @@ const Products = () => {
                     <div className="space-y-4">
                       <div>
                         <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                          {(() => {
-                            const displayName = product.name?.en || product.name || "Premium Product"
-                            console.log("📝 Displaying name:", displayName, "from:", product.name)
-                            return displayName
-                          })()}
+                          {product.name?.en || product.name || "Premium Product"}
                         </h3>
 
                         <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed line-clamp-3">
@@ -273,11 +228,6 @@ const Products = () => {
                         </div>
                       </div>
 
-                      {/* <div className="flex justify-between items-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-700 pt-3">
-                        <span className="font-mono">ID: {product.id.slice(0, 8)}...</span>
-                        <span>{new Date(product.createdAt).toLocaleDateString()}</span>
-                      </div> */}
-
                       <div className="flex gap-3 pt-2">
                         <button
                           onClick={() => handleViewDetails(product.id)}
@@ -301,7 +251,7 @@ const Products = () => {
             {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex justify-center mt-12">
-                <div className="glass-card p-4 rounded-2xl">
+                <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl p-4 shadow-xl">
                   <div className="flex space-x-2">
                     <button
                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -318,7 +268,7 @@ const Products = () => {
                         className={`px-4 py-2 rounded-lg font-semibold transition-all duration-300 ${
                           currentPage === index + 1
                             ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
-                            : "bg-white/50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                            : "bg-white/50 dark:bg-slate-700/50 text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                         }`}
                       >
                         {index + 1}

@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
@@ -39,20 +38,20 @@ const CategoryDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-emerald-900">
-        <ClipLoader color="#10b981" size={50} />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-blue-900">
+        <ClipLoader color="#3b82f6" size={50} />
       </div>
     )
   }
 
   if (error || !category) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-emerald-900">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-blue-900">
         <div className="text-center">
           <p className="text-red-600 dark:text-red-400 mb-4">{error || "Category not found"}</p>
           <button
             onClick={() => navigate("/categories")}
-            className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Back to Categories
           </button>
@@ -62,7 +61,7 @@ const CategoryDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-slate-900 dark:to-emerald-900 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-blue-900 py-8">
       <div className="category-details-background">
         <div className="floating-orb orb-1"></div>
         <div className="floating-orb orb-2"></div>
@@ -73,7 +72,7 @@ const CategoryDetails = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <button
           onClick={() => navigate("/categories")}
-          className="mb-8 flex items-center space-x-2 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all duration-300 hover:scale-105"
+          className="mb-8 flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-all duration-300 hover:scale-105"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -85,32 +84,38 @@ const CategoryDetails = () => {
           <div className="space-y-6">
             <div className="category-image-container group">
               <img
-                src={category.imageUrl || "/default-category.png"}
+                src={category.imageUrl || "/placeholder.svg?height=400&width=400&query=category"}
                 alt={category.name?.en || "Category"}
                 className="w-full h-96 object-cover rounded-2xl shadow-2xl group-hover:scale-105 transition-transform duration-500"
                 onError={(e) => {
-                  e.target.src = "/default-category.png"
+                  e.target.src = "/abstract-categories.png"
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/50 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-blue-900/50 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="stats-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-xl border border-emerald-200 dark:border-emerald-700 hover:scale-105 transition-transform duration-300">
+              <div className="stats-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-xl border border-blue-200 dark:border-blue-700 hover:scale-105 transition-transform duration-300">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">
+                  <div className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-1">
                     {new Date(category.createdAt).getFullYear()}
                   </div>
                   <div className="text-sm text-slate-600 dark:text-slate-300">Created</div>
                 </div>
               </div>
-              
+
+              <div className="stats-card bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-xl border border-indigo-200 dark:border-indigo-700 hover:scale-105 transition-transform duration-300">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mb-1">{category.id}</div>
+                  <div className="text-sm text-slate-600 dark:text-slate-300">Category ID</div>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="space-y-8">
             <div className="category-header">
-              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent mb-4 leading-tight">
+              <h1 className="text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 leading-tight">
                 {category.name?.en || "Category Name"}
               </h1>
               <div className="flex items-center space-x-4 text-sm text-slate-600 dark:text-slate-300 mb-6">
@@ -137,9 +142,9 @@ const CategoryDetails = () => {
               </div>
             </div>
 
-            <div className="description-card bg-white/70 dark:bg-slate-800/70 backdrop-blur-lg p-8 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+            <div className="description-card bg-white/70 dark:bg-slate-800/70 backdrop-blur-lg p-8 rounded-2xl border border-blue-200/50 dark:border-blue-700/50 shadow-xl hover:shadow-2xl transition-all duration-300">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -155,7 +160,10 @@ const CategoryDetails = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button className="action-btn bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+              <button
+                onClick={() => navigate("/products")}
+                className="action-btn bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+              >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
                     strokeLinecap="round"
@@ -165,17 +173,6 @@ const CategoryDetails = () => {
                   />
                 </svg>
                 <span>View Products</span>
-              </button>
-              <button className="action-btn bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white px-8 py-4 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                  />
-                </svg>
-                <span>Add to Favorites</span>
               </button>
             </div>
           </div>

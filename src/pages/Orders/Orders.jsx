@@ -1,4 +1,3 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import { ClipLoader } from "react-spinners"
@@ -20,10 +19,9 @@ const Orders = () => {
     try {
       setLoading(true)
       setError(null)
-      console.log("🔄 Fetching orders from API...")
 
       const token = localStorage.getItem("userToken")
-      const today = new Date().toISOString().split("T")[0] // Format: YYYY-MM-DD
+      const today = new Date().toISOString().split("T")[0]
       const response = await axios.get(`${API_BASE_URL}/website/orders`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -32,11 +30,9 @@ const Orders = () => {
           take: 50,
           page: 0,
           needPagination: false,
-          startDate: today, // Required parameter
+          startDate: today,
         },
       })
-
-      console.log("✅ Orders API Response:", response.data)
 
       if (response.data && Array.isArray(response.data)) {
         setOrders(response.data)
@@ -46,7 +42,7 @@ const Orders = () => {
         setOrders([])
       }
     } catch (error) {
-      console.error("❌ Error fetching orders:", error)
+      console.error("Error fetching orders:", error)
       setError(error.message)
       setOrders([])
 
@@ -73,7 +69,6 @@ const Orders = () => {
       title: "Create New Order",
       html: `
         <div class="text-left space-y-4 max-h-96 overflow-y-auto">
-          <!-- Basic Order Info -->
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium mb-2">Priority</label>
@@ -91,79 +86,7 @@ const Orders = () => {
               </select>
             </div>
           </div>
-
-          <!-- Address Information -->
-          <div class="border-t pt-4">
-            <h4 class="font-semibold mb-3">Address Information</h4>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-2">State ID</label>
-                <input id="stateId" type="text" class="w-full p-3 border rounded-lg" placeholder="State ID" value="8345434c-d514-4fbf-8b6c-18c501ea3150">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">City ID</label>
-                <input id="cityId" type="text" class="w-full p-3 border rounded-lg" placeholder="City ID" value="390578aa-32a4-45ac-80c4-220db3dbb54a">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Street 1</label>
-                <input id="street1" type="text" class="w-full p-3 border rounded-lg" placeholder="Main Street">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Street 2</label>
-                <input id="street2" type="text" class="w-full p-3 border rounded-lg" placeholder="Secondary Street">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Postal Code</label>
-                <input id="postalCode" type="text" class="w-full p-3 border rounded-lg" placeholder="12345">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Apartment</label>
-                <input id="apartment" type="text" class="w-full p-3 border rounded-lg" placeholder="Apt 123">
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-medium mb-2">Complex</label>
-                <input id="complex" type="text" class="w-full p-3 border rounded-lg" placeholder="Building Complex">
-              </div>
-            </div>
-          </div>
-
-          <!-- Item Information -->
-          <div class="border-t pt-4">
-            <h4 class="font-semibold mb-3">Item Details</h4>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-2">Width</label>
-                <input id="itemWidth" type="number" class="w-full p-3 border rounded-lg" placeholder="20" value="20">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Height</label>
-                <input id="itemHeight" type="number" class="w-full p-3 border rounded-lg" placeholder="19" value="19">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Product ID</label>
-                <input id="productId" type="text" class="w-full p-3 border rounded-lg" placeholder="Product ID" value="d0f372a4-a8ab-4296-a5a4-3fe71322b95b">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Category ID</label>
-                <input id="categoryId" type="text" class="w-full p-3 border rounded-lg" placeholder="Category ID" value="5c3062a0-c9a6-44bf-9abe-abaa051adb00">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Material ID</label>
-                <input id="materialId" type="text" class="w-full p-3 border rounded-lg" placeholder="Material ID" value="d9a58760-5094-4f57-bde0-dcfa06bcb7ab">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-2">Stage IDs (comma separated)</label>
-                <input id="stageIds" type="text" class="w-full p-3 border rounded-lg" placeholder="Stage IDs" value="5d11f862-d3b8-4d26-9fb7-604371711435,fb11eb84-4d7b-463e-a24b-6f5fddc23d85">
-              </div>
-              <div class="col-span-2">
-                <label class="block text-sm font-medium mb-2">Item Note</label>
-                <textarea id="itemNote" class="w-full p-3 border rounded-lg" rows="2" placeholder="Item specific notes..."></textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Order Note -->
-          <div class="border-t pt-4">
+          <div>
             <label class="block text-sm font-medium mb-2">Order Note</label>
             <textarea id="note" class="w-full p-3 border rounded-lg" rows="3" placeholder="General order notes..."></textarea>
           </div>
@@ -173,38 +96,12 @@ const Orders = () => {
       confirmButtonText: "Create Order",
       cancelButtonText: "Cancel",
       confirmButtonColor: "#3B82F6",
-      width: "800px",
+      width: "600px",
       preConfirm: () => {
         const priority = document.getElementById("priority").value
         const type = document.getElementById("type").value
         const note = document.getElementById("note").value
-
-        // Address data
-        const address = {
-          stateId: document.getElementById("stateId").value,
-          cityId: document.getElementById("cityId").value,
-          street1: document.getElementById("street1").value,
-          street2: document.getElementById("street2").value,
-          postalCode: document.getElementById("postalCode").value,
-          apartment: document.getElementById("apartment").value,
-          complex: document.getElementById("complex").value,
-        }
-
-        // Item data
-        const item = {
-          width: Number.parseInt(document.getElementById("itemWidth").value) || 20,
-          height: Number.parseInt(document.getElementById("itemHeight").value) || 19,
-          productId: document.getElementById("productId").value,
-          categoryId: document.getElementById("categoryId").value,
-          materialId: document.getElementById("materialId").value,
-          stageIds: document
-            .getElementById("stageIds")
-            .value.split(",")
-            .map((id) => id.trim()),
-          note: document.getElementById("itemNote").value,
-        }
-
-        return { priority, type, note, address, item }
+        return { priority, type, note }
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -216,19 +113,35 @@ const Orders = () => {
   const createOrder = async (orderData) => {
     try {
       const token = localStorage.getItem("userToken")
-      const userId = localStorage.getItem("userId") || "fd691550-75d1-4f5a-9742-19bc759e42a4" // Default user ID from JSON
+      const userId = localStorage.getItem("userId") || "fd691550-75d1-4f5a-9742-19bc759e42a4"
 
       const orderPayload = {
         priority: orderData.priority,
         type: orderData.type,
-        address: orderData.address,
+        address: {
+          stateId: "8345434c-d514-4fbf-8b6c-18c501ea3150",
+          cityId: "390578aa-32a4-45ac-80c4-220db3dbb54a",
+          street1: "Main Street",
+          street2: "Secondary Street",
+          postalCode: "12345",
+          apartment: "Apt 123",
+          complex: "Building Complex",
+        },
         note: orderData.note,
         status: "pending",
         userId: userId,
-        items: [orderData.item],
+        items: [
+          {
+            width: 20,
+            height: 19,
+            productId: "d0f372a4-a8ab-4296-a5a4-3fe71322b95b",
+            categoryId: "5c3062a0-c9a6-44bf-9abe-abaa051adb00",
+            materialId: "d9a58760-5094-4f57-bde0-dcfa06bcb7ab",
+            stageIds: ["5d11f862-d3b8-4d26-9fb7-604371711435", "fb11eb84-4d7b-463e-a24b-6f5fddc23d85"],
+            note: "Sample item",
+          },
+        ],
       }
-
-      console.log("🚀 Creating order with payload:", orderPayload)
 
       const response = await axios.post(`${API_BASE_URL}/website/orders`, orderPayload, {
         headers: {
@@ -237,11 +150,9 @@ const Orders = () => {
         },
       })
 
-      console.log("✅ Order created successfully:", response.data)
-
       Swal.fire({
         icon: "success",
-        title: "Order Created!",
+        title: "Order Created Successfully",
         text: "Your order has been created successfully.",
         toast: true,
         position: "top-end",
@@ -251,8 +162,7 @@ const Orders = () => {
 
       fetchOrders()
     } catch (error) {
-      console.error("❌ Error creating order:", error)
-      console.error("❌ Error response:", error.response?.data)
+      console.error("Error creating order:", error)
 
       Swal.fire({
         icon: "error",
@@ -360,7 +270,7 @@ const Orders = () => {
         ) : error && orders.length === 0 ? (
           <div className="glass-card p-8 text-center rounded-2xl">
             <div className="w-24 h-24 bg-gradient-to-r from-red-500 to-rose-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-              <span className="text-4xl text-white">❌</span>
+              <span className="text-4xl text-white">X</span>
             </div>
             <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">Error Loading Orders</h3>
             <p className="text-slate-600 dark:text-slate-300 mb-6">{error}</p>
@@ -374,7 +284,7 @@ const Orders = () => {
         ) : orders.length === 0 ? (
           <div className="glass-card p-8 text-center rounded-2xl">
             <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-              <span className="text-4xl text-white">📋</span>
+              <span className="text-4xl text-white">O</span>
             </div>
             <h3 className="text-2xl font-semibold text-slate-900 dark:text-white mb-4">No Orders Found</h3>
             <p className="text-slate-600 dark:text-slate-300 mb-6">You haven't placed any orders yet.</p>

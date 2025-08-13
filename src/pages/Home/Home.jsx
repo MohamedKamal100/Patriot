@@ -1,8 +1,8 @@
-"use client"
 
 import { useState, useEffect } from "react"
 import { Swiper, SwiperSlide } from "swiper/react"
 import { Navigation, Pagination, Autoplay, EffectCoverflow } from "swiper/modules"
+import axios from "axios"
 import "swiper/css"
 import "swiper/css/navigation"
 import "swiper/css/pagination"
@@ -12,6 +12,10 @@ import "./Home.css"
 const Home = () => {
   const [userData, setUserData] = useState(null)
   const [activeSection, setActiveSection] = useState(null)
+  const [categories, setCategories] = useState([])
+  const [loadingCategories, setLoadingCategories] = useState(true)
+
+  const API_BASE_URL = "https://patriot-backend-api-e8be76603d85.herokuapp.com/v1"
 
   useEffect(() => {
     const storedUserData = localStorage.getItem("userData")
@@ -20,53 +24,39 @@ const Home = () => {
       setUserData(parsedUserData)
       console.log("🏠 Home - User data loaded:", parsedUserData)
     }
+
+    // Fetch categories from API
+    fetchCategories()
   }, [])
 
-  // Sample categories data
-  const categories = [
-    {
-      id: 1,
-      name: "Tempered Glass",
-      image: "/modern-tempered-glass-panels.png",
-      description: "High-quality tempered glass for safety and durability",
-      products: 45,
-    },
-    {
-      id: 2,
-      name: "Laminated Glass",
-      image: "/laminated-glass-sheets.png",
-      description: "Multi-layer glass for enhanced security",
-      products: 32,
-    },
-    {
-      id: 3,
-      name: "Insulated Glass",
-      image: "/placeholder-5v7pc.png",
-      description: "Energy-efficient double and triple glazing",
-      products: 28,
-    },
-    {
-      id: 4,
-      name: "Decorative Glass",
-      image: "/placeholder-ai854.png",
-      description: "Artistic and patterned glass solutions",
-      products: 56,
-    },
-    {
-      id: 5,
-      name: "Mirror Glass",
-      image: "/mirror-glass-reflection.png",
-      description: "Premium mirrors for residential and commercial use",
-      products: 23,
-    },
-    {
-      id: 6,
-      name: "Smart Glass",
-      image: "/smart-glass-technology.png",
-      description: "Innovative switchable privacy glass",
-      products: 15,
-    },
-  ]
+  const fetchCategories = async () => {
+    try {
+      setLoadingCategories(true)
+      console.log("🔄 Fetching categories from API...")
+
+      const response = await axios.get(`${API_BASE_URL}/categories`)
+      console.log("✅ Categories API Response:", response.data)
+
+      let categoriesData = []
+      if (response.data && Array.isArray(response.data.results)) {
+        categoriesData = response.data.results
+      } else if (Array.isArray(response.data)) {
+        categoriesData = response.data
+      } else {
+        console.warn("⚠️ Unexpected API response structure:", response.data)
+        categoriesData = []
+      }
+
+      console.log("📦 Final categories data:", categoriesData)
+      setCategories(categoriesData)
+    } catch (error) {
+      console.error("❌ Error fetching categories:", error)
+      // Fallback to empty array if API fails
+      setCategories([])
+    } finally {
+      setLoadingCategories(false)
+    }
+  }
 
   const features = [
     {
@@ -188,74 +178,83 @@ const Home = () => {
       <section className="relative z-10 py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-6xl font-bold text-slate-800 dark:text-white mb-6">Our Glass Categories</h2>
+            <h2 className="text-4xl lg:text-6xl font-bold text-slate-800 dark:text-white mb-6">Our Categories</h2>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-              Explore our comprehensive range of premium glass products designed for every application
+              Explore our comprehensive range of premium products designed for every application
             </p>
           </div>
 
           <div className="relative">
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
-              spaceBetween={30}
-              slidesPerView={1}
-              centeredSlides={true}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-              }}
-              effect="coverflow"
-              coverflowEffect={{
-                rotate: 50,
-                stretch: 0,
-                depth: 100,
-                modifier: 1,
-                slideShadows: true,
-              }}
-              pagination={{ clickable: true }}
-              navigation={true}
-              loop={true}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                },
-                768: {
-                  slidesPerView: 3,
-                },
-                1024: {
-                  slidesPerView: 4,
-                },
-              }}
-              className="categories-swiper"
-            >
-              {categories.map((category) => (
-                <SwiperSlide key={category.id}>
-                  <div className="glass-card p-6 h-96 flex flex-col transform hover:scale-105 transition-all duration-500 group">
-                    <div className="relative overflow-hidden rounded-2xl mb-4 flex-1">
-                      <img
-                        src={category.image || "/placeholder.svg"}
-                        alt={category.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {loadingCategories ? (
+              <div className="flex justify-center items-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            ) : categories.length > 0 ? (
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay, EffectCoverflow]}
+                spaceBetween={30}
+                slidesPerView={1}
+                centeredSlides={true}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                }}
+                effect="coverflow"
+                coverflowEffect={{
+                  rotate: 50,
+                  stretch: 0,
+                  depth: 100,
+                  modifier: 1,
+                  slideShadows: true,
+                }}
+                pagination={{ clickable: true }}
+                navigation={true}
+                loop={true}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                  },
+                  768: {
+                    slidesPerView: 3,
+                  },
+                  1024: {
+                    slidesPerView: 4,
+                  },
+                }}
+                className="categories-swiper"
+              >
+                {categories.map((category) => (
+                  <SwiperSlide key={category.id}>
+                    <div className="glass-card p-6 h-96 flex flex-col transform hover:scale-105 transition-all duration-500 group">
+                      <div className="relative overflow-hidden rounded-2xl mb-4 flex-1">
+                        <img
+                          src={category.imageUrl || "/placeholder.svg?height=300&width=300&query=glass category"}
+                          alt={category.name?.en || category.name || "Category"}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          onError={(e) => {
+                            e.target.src = "/glass-category.png"
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </div>
+                      <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+                        {category.name?.en || category.name || "Category"}
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 flex-1">
+                        {category.description?.en || category.description || "Premium quality products"}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-blue-600 dark:text-blue-400 font-semibold">Available Now</span>
+                      </div>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">{category.name}</h3>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 flex-1">{category.description}</p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-blue-600 dark:text-blue-400 font-semibold">
-                        {category.products} Products
-                      </span>
-                      <button
-                        onClick={() => showDetails("category", category)}
-                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg"
-                      >
-                        Details
-                      </button>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-slate-600 dark:text-slate-300 text-xl">No categories available at the moment</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -266,7 +265,7 @@ const Home = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-6xl font-bold text-slate-800 dark:text-white mb-6">Why Choose Patriot?</h2>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-              We deliver excellence in every aspect of glass manufacturing and distribution
+              We deliver excellence in every aspect of manufacturing and distribution
             </p>
           </div>
 
@@ -281,12 +280,7 @@ const Home = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-white mb-4">{feature.title}</h3>
                 <p className="text-slate-600 dark:text-slate-300 mb-6">{feature.description}</p>
-                <button
-                  onClick={() => showDetails("feature", feature)}
-                  className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-semibold transform hover:scale-105 transition-all duration-300 shadow-lg"
-                >
-                  Learn More
-                </button>
+                
               </div>
             ))}
           </div>
@@ -319,28 +313,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Call to Action Section */}
-      <section className="relative z-10 py-20 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="glass-card p-12">
-            <h2 className="text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white mb-6">
-              Ready to Start Your Glass Project?
-            </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 mb-8">
-              Contact our experts today for a personalized consultation and quote
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg font-bold text-lg transform hover:scale-105 transition-all duration-300 shadow-xl">
-                Get Quote Now
-              </button>
-              <button className="px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-lg font-bold text-lg transform hover:scale-105 transition-all duration-300 shadow-xl">
-                View Catalog
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Details Modal */}
       {activeSection && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -356,22 +328,6 @@ const Home = () => {
                 ✕
               </button>
             </div>
-
-            {activeSection.section === "category" && (
-              <div>
-                <img
-                  src={activeSection.data.image || "/placeholder.svg"}
-                  alt={activeSection.data.name}
-                  className="w-full h-64 object-cover rounded-2xl mb-6"
-                />
-                <p className="text-slate-600 dark:text-slate-300 text-lg mb-4">{activeSection.data.description}</p>
-                <div className="bg-blue-500/10 dark:bg-blue-400/10 rounded-lg p-4">
-                  <p className="text-blue-700 dark:text-blue-300 font-semibold">
-                    Available Products: {activeSection.data.products}
-                  </p>
-                </div>
-              </div>
-            )}
 
             {activeSection.section === "feature" && (
               <div>
